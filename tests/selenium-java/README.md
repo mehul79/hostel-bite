@@ -1,200 +1,84 @@
-# HostelBite End-to-End (E2E) Tests
+# HostelBite — E2E Tests
 
-This folder contains Selenium-based end-to-end tests for the HostelBite web application.
-
-The tests simulate real user behaviour in a browser:
-
-- user authentication
-- browsing products
-- adding items to cart
-- checkout & order placement
-
-These are **UI-level integration tests** that verify frontend + backend + routing together.
+This folder contains the end-to-end UI tests for the **HostelBite** web application.
+These are Selenium + ChromeDriver tests written in Java and designed to run locally from Eclipse
+as **Java Applications** (not JUnit). They exercise real user flows end-to-end: frontend + backend + routing.
 
 ---
 
-## 🧰 Tech Stack
+## What’s included
 
-- Java
-- Selenium WebDriver
-- ChromeDriver
-- Executed from Eclipse
-- Run as **Java Applications** (not JUnit)
+- `BaseE2ETest.java` — shared helpers:
+  - `startBrowser()` / `closeBrowser()`
+  - `clearSession()`, `loginAsSeedUser()`
+  - `waitForProductsPage()`, `addFirstProductToCart()`
+- `AuthE2ETest.java` — Register & Login flows
+- `AddToCartE2ETest.java` — Add a product and validate cart contents
+- `CheckoutE2ETest.java` — Checkout and order placement
+- `SearchAndFilterE2ETest.java` — Product search and category filter behavior
 
----
-
-## 📁 Structure
-
-Base class:
-BaseE2ETest.java
-
-
-Contains:
-- browser setup / teardown
-- waits
-- login helpers
-- session clearing
-- reusable flows like add-to-cart
-
-Test files:
-AuthE2ETest.java
-AddToCartE2ETest.java
-CheckoutE2ETest.java
-
-
-Each test has a `main()` method and can be run independently.
+All tests are standalone Java applications and each test file has a `main()` method.
 
 ---
 
-## ▶️ How to Run a Test
+## Prerequisites
 
-### From Eclipse:
-Right click the file → **Run As → Java Application**
-
-Example:
-Run AuthE2ETest.java
-
-
----
-
-## 🌐 Requirements Before Running
-
-You MUST have:
-
-✅ Frontend running → `http://localhost:5173`  
-✅ Backend running  
-✅ Database connected  
-✅ Seed user present  
-
-Default seed user:
-email: seed-shop@hostelbite.demo
-password: SeedPass123!
-
+1. **Frontend running** — the UI must be reachable at the `baseUrl` (default `http://localhost:5173`).
+2. **Backend running** — APIs for auth, products, cart, checkout must be available locally.
+3. **Seed user** must exist in the DB for seed-login tests:
+   - `seed-shop@hostelbite.demo` / `SeedPass123!`
+4. **Chrome** installed (matching your chromedriver).
+5. **chromedriver** binary available on disk (path configured below).
+6. **Java 17+** and Selenium Java libraries on project classpath (or managed via Maven/Gradle).
+7. Eclipse configured to run Java applications.
 
 ---
 
-## 👀 Headless vs Visible Browser
+## File / package location
 
-By default tests run **headless** (no UI).
+For the setup used in this project, use the package and folder:
 
-If you want to see the browser:
-
-### Run Configuration → VM Arguments
--Dheadless=false
+package Experiment_1_Packages;
+src/Experiment_1_Packages/*.java
 
 
-Now Chrome will open.
+Make sure each file's `package` line matches the folder path.
 
 ---
 
-## 🚗 ChromeDriver Setup
+## Configure ChromeDriver & headless mode
 
-By default we use:
+The default `BaseE2ETest` looks for:
+
 C:\Chrome-Driver\chromedriver_1.exe
 
 
-If your path is different, either:
+Ways to configure:
 
-### Option 1 – change inside BaseE2ETest  
-or  
-### Option 2 – pass VM argument:
--Dwebdriver.chrome.driver="C:\path\to\chromedriver.exe"
+- **VM arguments (recommended)** — set path & turn on visual browser:
+  - Open Run → Run Configurations → (select test) → Arguments → VM arguments
+  - Example:
+    ```
+    -Dwebdriver.chrome.driver="C:\path\to\chromedriver.exe" -Dheadless=false
+    ```
+- **Or** edit the default in `BaseE2ETest.startBrowser()` temporarily.
 
-
----
-
-## 🧪 Available Test Flows
-
-### AuthE2ETest
-- Register new user
-- Login with seed user
-- Verify redirect to products
-
-### AddToCartE2ETest
-- Login
-- Add first product
-- Verify item exists in cart
-
-### CheckoutE2ETest
-- Login
-- Add product
-- Proceed to checkout
-- Place order
-- Verify success screen
+**Note:** `-Dheadless=false` will show the browser window (great for debugging). Default in code is headless mode.
 
 ---
 
-## ❌ If a Test Fails
+## Run a test (Eclipse)
 
-### Step 1  
-Run with:
--Dheadless=false
-
-
-### Step 2  
-Comment the `closeBrowser()` call to keep window open.
-
-### Step 3  
-Observe:
-- validation errors
-- disabled buttons
-- wrong redirects
+1. Right-click the test `.java` file (e.g. `AuthE2ETest.java`).
+2. Select **Run As → Java Application**.
+3. Watch console output. If running headless you will not see a browser UI; set `-Dheadless=false` to view it.
 
 ---
 
-## ⏳ Why waits are important
+## Run flow summary
 
-React loads data asynchronously.
+- `main()` starts the browser (`startBrowser()`).
+- The test executes user steps (login / search / add / checkout).
+- On success the test prints `✅ <test> passed`.
+- On failure the test throws a `RuntimeException` with a descriptive message.
 
-Humans wait.  
-Selenium does not.
-
-So we use explicit waits like:
-wait.until(...)
-
-
-instead of relying on sleep.
-
----
-
-## ⚠ CDP Version Warning
-
-You may see:
-
-Unable to find exact CDP version
-
-
-This is normal when Chrome updated.
-Tests usually still run.
-
-Update Selenium & ChromeDriver together to remove it.
-
----
-
-## 🎯 Purpose of These Tests
-
-These tests protect critical business flows:
-
-- Can users login?
-- Can they order food?
-- Can checkout complete?
-
-If these break → production is broken.
-
----
-
-## 🚀 Future Improvements (planned)
-
-- screenshot on failure
-- HTML report
-- CI/CD execution
-- parallel runs
-- auto test data seeding
-
----
-
-## 🧠 Author Note
-
-Tests are written to be easy to run locally for development learning.
-
-Later they can be migrated to JUnit/TestNG for CI pipelines.
