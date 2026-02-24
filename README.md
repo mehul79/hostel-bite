@@ -1,6 +1,6 @@
 # Hostel Bite
 
-A full-stack food ordering and shop management app for hostels. Students can browse products from hostel shops, add items to cart, and place orders. Shop owners can manage their shop, products, and view orders.
+The full-stack food ordering and shop management app for hostels. Students can browse products from hostel shops, add items to cart, and place orders. Shop owners can manage their shop, products, and view orders.
 
 ## Tech Stack
 

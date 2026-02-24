@@ -29,8 +29,7 @@ public class BaseE2ETest {
     boolean headless = Boolean.parseBoolean(getConfig("headless", "false"));
 
     // Use configured chromedriver path (default mirrors your Experiment_4)
-    String chromeDriverPath = getConfig("webdriver.chrome.driver", "C:\\\\Chrome-Driver\\\\chromedriver_1.exe");
-    System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+   
 
     ChromeOptions options = new ChromeOptions();
     if (headless) {

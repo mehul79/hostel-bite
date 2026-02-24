@@ -14,31 +14,43 @@ public class SearchAndFilterE2ETest extends BaseE2ETest {
     try {
       System.out.println("Running searchAndFilter test...");
       test.clearSession();
+      test.slowDown();
+
       test.loginAsSeedUser();
+      test.slowDown();
+
       test.waitForProductsPage();
+      test.slowDown();
 
       WebElement searchInput =
           test.wait.until(
               ExpectedConditions.visibilityOfElementLocated(
                   By.cssSelector("input[placeholder='Search products...']")));
 
-      // Search flow: seeded dataset contains "Oreo Original".
+    
+      test.highlight(searchInput);
       searchInput.sendKeys("Oreo");
+      test.slowDown();
+
       test.wait.until(
           ExpectedConditions.visibilityOfElementLocated(
               By.xpath("//h3[normalize-space()='Oreo Original']")));
+      test.slowDown();
 
-      // Filter flow: clear search, then filter for drinks and expect drink items.
       searchInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE);
-      test.wait.until(driver -> searchInput.getAttribute("value").isEmpty());
+      test.slowDown();
 
+      test.wait.until(driver -> searchInput.getAttribute("value").isEmpty());
+      test.slowDown();
 
       test.clickFilter("Drink", "Beverages");
+      test.slowDown();
 
       test.wait.until(
           ExpectedConditions.visibilityOfElementLocated(
               By.xpath(
                   "//h3[normalize-space()='Coca-Cola' or normalize-space()='Pepsi' or normalize-space()='Sprite' or normalize-space()='Fanta Orange']")));
+      test.slowDown();
 
       if (!test.driver.getCurrentUrl().contains("/products")) {
         System.out.println("Current URL = " + test.driver.getCurrentUrl());
@@ -47,7 +59,6 @@ public class SearchAndFilterE2ETest extends BaseE2ETest {
 
       System.out.println("✅ searchAndFilter passed");
     } finally {
-      // comment this during debugging to keep the browser open
 //      test.closeBrowser();
     }
   }
@@ -57,10 +68,14 @@ public class SearchAndFilterE2ETest extends BaseE2ETest {
     By fallback = By.xpath("//button[normalize-space()='" + fallbackLabel + "']");
 
     if (!driver.findElements(primary).isEmpty()) {
-      wait.until(ExpectedConditions.elementToBeClickable(primary)).click();
+      WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(primary));
+      highlight(btn);
+      btn.click();
       return;
     }
 
-    wait.until(ExpectedConditions.elementToBeClickable(fallback)).click();
+    WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(fallback));
+    highlight(btn);
+    btn.click();
   }
 }
